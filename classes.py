@@ -135,7 +135,6 @@ class Acessos():
 
     def inicia_navegador(self):
         options = Options()
-        options.add_argument("--incognito")
         self.navegador = webdriver.Chrome(options=options)
         return self.navegador
 
