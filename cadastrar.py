@@ -8,10 +8,10 @@ import pandas as pd
 from classes import ConexaoBancoDados, Acessos
 from openpyxl import load_workbook
 
-def CadastrarEscalas(cpf, senha, aba, conexao):
+def CadastrarEscalas(cpf, senha, aba, conexao, gb):
     # BUSCA OS DADOS DA PLANILHA GOOGLE E SALVA AS INFORMAÇÕES NAS VARIÁVEIS
-    bd = ConexaoBancoDados()
-    ac = Acessos()
+    bd = ConexaoBancoDados(gb)
+    ac = Acessos(gb)
     bd.Update_certifi()
 
     cadastro = bd.cadastro

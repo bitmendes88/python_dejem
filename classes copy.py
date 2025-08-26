@@ -14,27 +14,12 @@ import pyautogui as gui
 
 
 class ConexaoBancoDados:
-    def __init__(self, gb: str):
-        # Normaliza o valor recebido
-        self.gb = gb.upper()
+    def __init__(self):
 
-        # Define credenciais apenas para valores aceitos
-        if self.gb == "COBOM":
-            cred_filename = "credentialscobom.json"
-        elif self.gb == "19GB":
-            cred_filename = "credentials19gb.json"
-        else:
-            raise ValueError(f"Não existe configuração de credenciais para GB='{self.gb}'")
+        self.credentials_19gb = self.caminho_relativo("credentials19gb.json")
+        self.credentials_cobom = self.caminho_relativo("credentials.json")
 
-        # Caminho absoluto/relativo
-        self.credentials = self.caminho_relativo(cred_filename)
-
-        if not os.path.exists(self.credentials):
-            raise FileNotFoundError(
-                f"Arquivo de credenciais não encontrado: {self.credentials}"
-            )
-
-        # Inicia o cliente gspread com a credencial escolhida
+        
         self.client = gspread.service_account(filename=self.credentials)
         
         self.BD_GESTAO_DEJEM = self.client.open('BD_GESTAO_DEJEM')
@@ -144,9 +129,9 @@ class ConexaoBancoDados:
         print(filtro_df_tabela_db_app[['ID_ESCALA','DATA_ESCALA']])
         return filtro_df_tabela_db_app[['ID_ESCALA','DATA_ESCALA']].reset_index(drop=True)
 
-class Acessos:
-    def __init__(self, gb: str):
-        self.bd = ConexaoBancoDados(gb)
+class Acessos():
+    def __init__(self):
+        self.bd = ConexaoBancoDados()
 
     def inicia_navegador(self):
         options = Options()

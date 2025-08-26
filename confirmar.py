@@ -8,9 +8,9 @@ import time
 from classes import ConexaoBancoDados, Acessos
 from openpyxl import load_workbook
 
-def ConfirmarEscalas(cpf, senha, aba, conexao):
-    bd = ConexaoBancoDados()
-    ac = Acessos()
+def ConfirmarEscalas(cpf, senha, aba, conexao, gb):
+    bd = ConexaoBancoDados(gb)
+    ac = Acessos(gb)
     bd.Update_certifi()
 
     confirmacao = bd.confirmacao

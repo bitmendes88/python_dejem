@@ -5,10 +5,10 @@ from PIL import Image
 from classes import ConexaoBancoDados, Acessos
 from time import sleep
 
-def Baixar_Escalas(cpf, senha, aba, conexao):
+def Baixar_Escalas(cpf, senha, aba, conexao, gb):
     # INSTANCIA A CLASSE PARA CONEXÃO COM O BANCO
-    bd = ConexaoBancoDados()
-    ac = Acessos()
+    bd = ConexaoBancoDados(gb)
+    ac = Acessos(gb)
     bd.Update_certifi()
 
     # BUSCA NO BANCO DE DADOS DO APPSHEET AS ESCALAS QUE SERÃO BAIXADAS

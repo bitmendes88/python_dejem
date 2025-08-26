@@ -7,9 +7,9 @@ from urllib.parse import urlparse, parse_qs
 from time import sleep
 from classes import ConexaoBancoDados, Acessos
 
-def Processo_SEI(cpf, senha):
+def Processo_SEI(cpf, senha, gb):
     # INSTANCIA A CLASSE DA CONEXÃO COM O BANCO
-    bd = ConexaoBancoDados()
+    bd = ConexaoBancoDados(gb)
     ac = Acessos()
     bd.Update_certifi()
     

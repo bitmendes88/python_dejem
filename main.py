@@ -14,7 +14,7 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.window.width = 600
-    page.window.height = 930
+    page.window.height = 1020
     page.window.resizable = False
     background = ft.Container(
         #image_src="background_image.jpg",
@@ -53,6 +53,43 @@ def main(page: ft.Page):
         text_align=ft.TextAlign.CENTER,
     )
 
+    # Variável global para armazenar a opção selecionada
+    selected_gb_option = "COBOM"  # Valor inicial padrão
+
+    # Função chamada quando a opção do dropdown mudar
+    def gb_dropdown_changed(e):
+        nonlocal selected_gb_option
+        selected_gb_option = gb_dropdown.value
+
+    # Dropdown para seleção de GB
+    gb_dropdown = ft.Dropdown(
+        label="OPM",
+        width=150,
+        options=[
+            ft.dropdown.Option("7GB"),
+            ft.dropdown.Option("15GB"),
+            ft.dropdown.Option("16GB"),
+            ft.dropdown.Option("19GB"),
+            ft.dropdown.Option("COBOM"), 
+        ],
+        value=selected_gb_option,
+        on_change=gb_dropdown_changed
+    )
+
+    rodape = ft.Container(
+        content=ft.Text(
+            "Desenvolvido por © 1º Sgt PM Welligton Pereira MENDES Oliveira",
+            size=12,
+            weight=ft.FontWeight.BOLD,
+            color=ft.Colors.WHITE,
+            text_align=ft.TextAlign.CENTER,
+        ),
+        bgcolor=ft.Colors.BLACK,
+        padding=2,
+        alignment=ft.alignment.center,
+        border_radius=10  
+    )
+
     # CRIAÇÃO DINÂMICA DOS BOTÕES
     def create_button(text, on_click_action):
         return ft.Container(
@@ -69,16 +106,17 @@ def main(page: ft.Page):
     # DEFINIÇÃO DOS BOTÕES
     buttons = ft.Column(
         [
-            create_button("CADASTRAR ESCALAS", lambda e: abrir_popup("cadastrar", selected_option)),
-            create_button("MONTAR ESCALAS", lambda e: abrir_popup("montar", selected_option)),
-            create_button("BAIXAR ESCALAS", lambda e: abrir_popup("baixar", selected_option)),
-            create_button("GERAR PROCESSO SEI", lambda e: abrir_popup("sei", selected_option)),
-            create_button("CONFIRMAR ESCALAS", lambda e: abrir_popup("confirmar", selected_option)),
+            create_button("CADASTRAR ESCALAS", lambda e: abrir_popup("cadastrar", selected_option, selected_gb_option)),
+            create_button("MONTAR ESCALAS", lambda e: abrir_popup("montar", selected_option, selected_gb_option)),
+            create_button("BAIXAR ESCALAS", lambda e: abrir_popup("baixar", selected_option, selected_gb_option)),
+            create_button("GERAR PROCESSO SEI", lambda e: abrir_popup("sei", selected_option, selected_gb_option)),
+            create_button("CONFIRMAR ESCALAS", lambda e: abrir_popup("confirmar", selected_option, selected_gb_option)),
         ],
         spacing=15,
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
+
 
     # LINHA DIVISÓRIA
     divider = ft.Divider(color="red", thickness=2)
@@ -109,9 +147,9 @@ def main(page: ft.Page):
     popup_modal = ft.AlertDialog(modal=True)
 
     # Função para abrir o popup
-    def abrir_popup(btn_pop, conexao_btn_rotina):
+    def abrir_popup(btn_pop, conexao_btn_rotina, gb_option):
 
-        def continua_rotina(btn_cont, conexao_btn_pop):
+        def continua_rotina(btn_cont, conexao_btn_pop, gb_option_inner):
             cpf = campo_cpf.value.strip()
             senha = campo_senha.value.strip()
             if not cpf or not senha:
@@ -120,20 +158,21 @@ def main(page: ft.Page):
                 return
             try:
                 if btn_cont == "cadastrar":
-                    CadastrarEscalas(cpf, senha, btn_cont, conexao_btn_pop)
+                    CadastrarEscalas(cpf, senha, btn_cont, conexao_btn_pop, gb_option_inner)
                 elif btn_cont == "montar":
-                    MontarEscalas(cpf, senha, btn_cont, conexao_btn_pop)
+                    MontarEscalas(cpf, senha, btn_cont, conexao_btn_pop, gb_option_inner)
                 elif btn_cont == "baixar":
-                    Baixar_Escalas(cpf, senha, btn_cont, conexao_btn_pop)
+                    Baixar_Escalas(cpf, senha, btn_cont, conexao_btn_pop, gb_option_inner)
                 elif btn_cont == "sei":
-                    Processo_SEI(cpf, senha)
+                    Processo_SEI(cpf, senha, gb_option_inner)
                 elif btn_cont == "confirmar":
-                    ConfirmarEscalas(cpf, senha, btn_cont, conexao_btn_pop)
+                    ConfirmarEscalas(cpf, senha, btn_cont, conexao_btn_pop, gb_option_inner)
                 popup_modal.open = False
             except Exception as ex:
                 msg_erro.value = f"Erro: {str(ex)}"
             finally:
                 page.update()
+
 
         # Componentes do popup
         titulo_popup = ""
@@ -152,7 +191,7 @@ def main(page: ft.Page):
         campo_cpf = ft.TextField(label="CPF", width=250)
         campo_senha = ft.TextField(label="Senha", password=True, width=250)
         msg_erro = ft.Text(value="", color="red")
-        btn_continuar = ft.ElevatedButton("CONTINUAR", on_click=lambda e: continua_rotina(btn_pop, conexao_btn_rotina))
+        btn_continuar = ft.ElevatedButton("CONTINUAR", on_click=lambda e: continua_rotina(btn_pop, conexao_btn_rotina, gb_option))
         btn_fechar = ft.IconButton(icon=ft.Icons.CLOSE, icon_color="red", on_click=fechar_popup, style=ft.ButtonStyle( padding=ft.padding.all(5), alignment=ft.alignment.top_right))
 
         # Criar o modal
@@ -184,23 +223,31 @@ def main(page: ft.Page):
     page.update()
 
     # Adicionando elementos à página
+    # Adicionando elementos à página
     page.add(
         background,
         cabecalho,
         toolbar,
-        ft.Container(
-            content=subtitle,
-            margin=ft.margin.symmetric(vertical=20),
-            alignment=ft.alignment.center,
-        ),
-        ft.Row(
+        ft.Column(
             [
-                ft.Text("Intranet"),
-                toggle_switch,
-                ft.Text("VPN"),
+                ft.Container(
+                    content=subtitle,
+                    margin=ft.margin.symmetric(vertical=20),
+                    alignment=ft.alignment.center,
+                ),
+                gb_dropdown,  # Dropdown abaixo do subtítulo
+                ft.Row(
+                    [
+                        ft.Text("Intranet"),
+                        toggle_switch,
+                        ft.Text("VPN"),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=10
         ),
         buttons,
         ft.Container(content=divider, margin=ft.margin.only(top=20)),
@@ -209,9 +256,11 @@ def main(page: ft.Page):
             margin=ft.margin.only(top=20),
             alignment=ft.alignment.center,
         ),
-
-        links
+        links,
+        rodape
     )
+
     page.overlay.append(popup_modal)
+
 # Executa o app
 ft.app(target=main)

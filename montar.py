@@ -6,10 +6,10 @@ from classes import ConexaoBancoDados, Acessos
 from time import sleep
 from openpyxl import load_workbook
 
-def MontarEscalas(cpf, senha, aba, conexao):
+def MontarEscalas(cpf, senha, aba, conexao, gb):
     # ATUALIZA O CERTIFICADO SSL
-    bd = ConexaoBancoDados()
-    ac = Acessos()
+    bd = ConexaoBancoDados(gb)
+    ac = Acessos(gb)
     bd.Update_certifi()
     # BUSCA FUNÇÃO QUE FILTRA AS ESCALAS PARA MONTAR
     geracao = bd.geracao
