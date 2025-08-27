@@ -2,19 +2,15 @@ import importlib.util
 import sys
 import os
 
-# Garante que estamos rodando Python 3.12
-if not (sys.version_info.major == 3 and sys.version_info.minor == 12):
-    print("❌ Este programa requer Python 3.12.")
-    sys.exit(1)
-
-# Adiciona a pasta atual ao sys.path para imports locais funcionarem
 sys.path.insert(0, os.path.dirname(__file__))
 
-# Caminho do main.pyc
-pyc_path = os.path.join(os.path.dirname(__file__), "__pycache__", "main.cpython-312.pyc")
+def load_pyc(name, filename):
+    spec = importlib.util.spec_from_file_location(name, filename)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
 
-# Carrega o módulo main a partir do .pyc
-spec = importlib.util.spec_from_file_location("main", pyc_path)
-main = importlib.util.module_from_spec(spec)
-sys.modules["main"] = main
-spec.loader.exec_module(main)
+# Carrega módulos
+cadastrar = load_pyc("cadastrar", os.path.join(os.path.dirname(__file__), "cadastrar.pyc"))
+main = load_pyc("main", os.path.join(os.path.dirname(__file__), "main.pyc"))
