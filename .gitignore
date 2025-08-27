@@ -1,3 +1,9 @@
 credentials.json
-__pycache__/
 .git/
+baixar_escalas.py
+cadastrar.py
+classes.py
+confirmar.py
+main.py
+montar.py
+processoSEI.py
